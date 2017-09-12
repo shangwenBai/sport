@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC
+ "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+ "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration> 
+
+	<!-- 数据库驱动 --> 
+	<classPathEntry  location="D:\MyBatisGenerator\mysql-connector-java-5.1.30.jar"/>  
+
+	<!-- 此处指定生成针对MyBatis3的DAO -->
+    <context id="mysqlTables"  targetRuntime="MyBatis3">  
+
+        <commentGenerator>  
+            <property name="suppressDate" value="true"/>  
+            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->  
+            <property name="suppressAllComments" value="true"/>  
+        </commentGenerator>  
+        
+        <!--数据库链接URL，用户名、密码 -->  
+        <jdbcConnection 
+        	driverClass="com.mysql.jdbc.Driver" 
+        	connectionURL="jdbc:mysql://127.0.0.1:3306/zhssm" 
+        	userId="dbssm" 
+        	password="ok" />  
+		<!-- 
+        <jdbcConnection 
+        	driverClass="oracle.jdbc.driver.OracleDriver" 
+        	connectionURL="jdbc:oracle:thin:@127.0.0.1:1521:orcl" 
+        	userId="user" 
+        	password="pwd" /> 
+         -->
+        	
+        <!-- 指定生成的类型为java类型，避免数据库中number等类型字段 ,默认false，把JDBC DECIMAL 和 NUMERIC 类型解析为 Integer   
+             true，把JDBC DECIMAL 和 NUMERIC 类型解析为java.math.BigDecimal 
+        -->
+        <javaTypeResolver>  
+            <property name="forceBigDecimals" value="false"/>  
+        </javaTypeResolver>  
+        
+        <!-- 生成模型的包名和位置,存放位置可以指定具体的路径,如/ProjectName/src，也可以使用MAVEN来自动生成 -->  
+        <javaModelGenerator targetPackage="com.cn.ssm.entity" targetProject="D:\Workspaces\MyEclipse 10\ssm\src">
+        	<!-- enableSubPackages:是否让schema作为包的后缀 --> 
+            <property name="enableSubPackages" value="true"/> 
+            <!-- 从数据库返回的值被清理前后的空格  -->   
+            <property name="trimStrings" value="true"/>  
+        </javaModelGenerator> 
+         
+ 		<!-- 生成映射文件xml mapper的包名和位置 -->
+        <sqlMapGenerator targetPackage="com.cn.ssm.mapping" targetProject="D:\Workspaces\MyEclipse 10\ssm\src">  
+            <property name="enableSubPackages" value="true"/>  
+        </sqlMapGenerator>  
+        
+        <!-- 生成DAO的包名和位置 -->  
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.cn.ssm.dao" targetProject="D:\Workspaces\MyEclipse 10\ssm\src">  
+            <property name="enableSubPackages" value="true"/>  
+        </javaClientGenerator>  
+        
+        <!-- 要生成的表 tableName是数据库中的表名或视图名 domainObjectName是实体类名 -->  
+        
+		<table tableName="user" domainObjectName="User" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" />
+
+    </context>  
+</generatorConfiguration>  

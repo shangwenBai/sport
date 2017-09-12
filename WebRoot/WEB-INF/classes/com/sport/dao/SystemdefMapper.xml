@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sport.dao.SystemdefMapper">
+
+	<resultMap type="com.sport.model.Systemdef" id="systemdefResultMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="parentid" property="parentid"/>
+	</resultMap>
+
+	<select id="getAll" resultType="com.sport.model.Systemdef">
+		select id,parentid,name,
+			(select count(1) from systemdef s where s.parentid!=0 and s.parentid=m.id) countChildrens 
+		from systemdef m where 1=1
+		<if test="sort != null and sort != ''">
+            order by #{sort} #{order}
+        </if>
+        <if test="page > 0">
+            limit #{start},#{end}
+        </if>
+	</select>
+	
+	<select id="getSystemdefById" parameterType="int" resultMap="systemdefResultMap">
+		select * from systemdef where id=#{id}
+	</select>
+	
+	<insert id="insertSystemdef" parameterType="com.sport.model.Systemdef"  useGeneratedKeys="true" keyProperty="id">
+		insert into systemdef (id,name,parentid) values (#{id},#{name},#{parentid})
+	</insert>
+	
+	<update id="updateSystemdef" parameterType="com.sport.model.Systemdef">
+		update systemdef set 
+		name=#{name},
+		id=#{id},
+		parentid=#{parentid} 
+		where id=#{id}
+	</update>
+	
+	<delete id="deleteSystemdefById" parameterType="int">
+		delete from systemdef where id=#{id}
+	</delete>
+	
+</mapper>

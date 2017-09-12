@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sport.dao.MenuMapper">
+
+	<resultMap type="com.sport.model.SysMenu" id="menuResultMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="url" property="url"/>
+		<result column="parentid" property="parentid"/>
+		<result column="enable" property="enable"/>
+		<result column="sequence" property="sequence"/>
+		<result column="iconCls" property="iconCls"/>
+	</resultMap>
+
+	<select id="getDatagridTotal" resultType="long">
+		select count(1) from sysmenu where  parentid=0
+		<if test="name != null and name != ''">
+            and name like concat('%',#{name},'%')
+        </if>
+	</select>
+
+	<select id="datagridMenu" resultType="com.sport.model.SysMenu">
+		select id,name,url from sysmenu where parentid=0
+		<if test="sort != null and sort != ''">
+            order by #{sort} #{order}
+        </if>
+        <if test="page > 0">
+            limit #{start},#{end}
+        </if>
+	</select>
+	
+	<select id="getAll" resultType="com.sport.model.SysMenu">
+		select id,parentid,sequence,iconCls,name,url,enable from sysmenu where 1=1
+		<if test="sort != null and sort != ''">
+            order by #{sort} #{order}
+        </if>
+        <if test="page > 0">
+            limit #{start},#{end}
+        </if>
+	</select>
+	
+	<select id="listAllParentMenu" resultMap="menuResultMap">
+		select * from sysmenu where parentid = 0 and enable=1
+	</select>
+	<select id="listSubMenuByparentid" parameterType="int" resultMap="menuResultMap">
+		select * from sysmenu where parentid=#{parentid}
+	</select>
+	<select id="getMenuById" parameterType="int" resultMap="menuResultMap">
+		select * from sysmenu where id=#{id}
+	</select>
+	<select id="listAllSubMenu" resultMap="menuResultMap">
+		select * from sysmenu where parentid >=1
+	</select>
+	
+	<insert id="insertMenu" parameterType="com.sport.model.SysMenu"  useGeneratedKeys="true" keyProperty="id">
+		insert into sysmenu (name,url,parentid) values (#{name},#{url},#{parentid})
+	</insert>
+	
+	<update id="updateMenu" parameterType="com.sport.model.SysMenu">
+		update sysmenu set 
+		name=#{name},
+		url=#{url},
+		parentid=#{parentid} 
+		where id=#{id}
+	</update>
+	
+	<delete id="deleteMenuById" parameterType="int">
+		delete from sysmenu where id=#{id} or parentid=#{id}
+	</delete>
+</mapper>

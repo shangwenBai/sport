@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sport.dao.UserMapper">    
+	<select id="findUserByName" resultType="com.sport.model.User">
+		select id, username ,roleId, password from sysuser where username = #{username} 
+	</select>
+	
+	<select id="searchUserByName" resultType="com.sport.model.User">
+		select 
+			u.id,u.username,u.password,u.email,u.gender,u.qq,u.weixin,u.regtime,u.idcard,
+			u.name,u.roleId
+		from sysuser u where 1=1 
+       <if test="userName != null and userName != ''">
+            and u.username like concat('%',#{userName},'%')
+        </if>
+		
+		<if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+	
+	<select id="getUsernameById" resultType="String">
+		select username  from sysuser where id = #{id} 
+	</select>
+	
+	<select id="getMenuByRoleId" resultType="com.sport.model.SysMenu">
+				SELECT m.id,m.name,m.parentid,m.iconCls,m.url,
+			(SELECT COUNT(1) FROM sysmenu s WHERE s.parentId!=0 AND s.parentId=m.id) countChildrens 
+		FROM sysmenu m
+		  LEFT JOIN user_menu um
+		  ON m.id = um.menu_id
+		  LEFT JOIN sysuser u
+		  ON u.roleId = um.roleId
+		   WHERE m.enable=1 AND u.roleId = #{roleId} 
+		  AND m.id NOT IN(
+			SELECT tt.id
+			FROM
+				(SELECT m.id,
+					(SELECT COUNT(parentId) FROM sysmenu sp WHERE sp.enable=1 AND sp.parentId=m.id AND m.parentId=0 ) countch
+				 FROM sysmenu m WHERE m.parentId=0
+		  		) tt 
+		  	WHERE countch =0
+		  )
+		  ORDER BY m.sequence
+	</select> 
+	
+	<select id="getDatagridTotal" resultType="long">
+		select 
+			count(1) 
+		from sysuser u where 1=1
+		<if test="user.username != null and user.username != ''">
+           and username like concat('%',#{user.username},'%')
+        </if>
+	</select>
+
+	<select id="datagridUser" resultType="com.sport.model.User">
+		select 
+			u.id,u.username,u.password,u.email,u.gender,u.qq,u.weixin,u.regtime,u.idcard,
+			u.name 
+		from sysuser u		
+		<if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+	
+	<insert id="addUser" useGeneratedKeys="true" keyProperty="id">
+		insert into sysuser(<trim suffixOverrides=",">
+            <if test="username !=null and username !=''">username,</if>
+             <if test=" name!=null and name !=''">name,</if>
+            <if test="password !=null and password !=''">password,</if>
+            <if test="idcard !=null and idcard !=''">idcard,</if>
+            <if test="email !=null and email !=''">email,</if>
+            <if test="gender !=null and gender !=''">gender,</if>
+            <if test="qq !=null and qq !=''">qq,</if>
+            <if test="weixin !=null and weixin !=''">weixin,</if>
+            <if test="regtime !=null and regtime !=''">regtime,</if>
+            roleId
+            </trim>)values(<trim suffixOverrides=",">
+            <if test="username !=null and username !=''">#{username},</if>
+            <if test="name !=null and name !=''">#{name},</if>
+            <if test="password !=null and password !=''">#{password},</if>
+            <if test="idcard !=null and idcard !=''">#{idcard},</if>
+            <if test="email !=null and email !=''">#{email},</if>
+            <if test="gender !=null and gender !=''">#{gender},</if>
+            <if test="qq !=null and qq !=''">#{qq},</if>
+            <if test="weixin !=null and weixin !=''">#{weixin},</if>
+            <if test="regtime !=null and regtime !=''">#{regtime},</if> 
+            2
+            </trim>)
+	</insert>
+	
+    <update id="editUser">
+    	update sysuser
+    	<set>
+    		<if test="username !=null and username !=''">username =#{username},</if>
+    		<if test="name !=null and name !=''">name =#{name},</if>
+            <if test="password !=null and password !=''">password =#{password},</if>
+            <if test="idcard !=null and idcard !=''">idcard=#{idcard},</if>
+            <if test="email !=null and email !=''">email=#{email},</if>
+            <if test="gender !=null and gender !=''">gender=#{gender},</if>
+            <if test="qq !=null and qq !=''">qq=#{qq},</if>
+            <if test="weixin !=null and weixin !=''">weixin=#{weixin},</if>
+            <if test="regtime !=null and regtime !=''">regtime=#{regtime}</if>
+    	</set>
+    	where id = #{id}
+    </update>
+    
+    <delete id="deleteUser" parameterType="int">
+		delete from sysuser where id=#{id}
+	</delete>
+</mapper>
